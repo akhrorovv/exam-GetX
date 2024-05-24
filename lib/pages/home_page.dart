@@ -1,6 +1,9 @@
 import 'package:exam/models/article_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
+import '../controller/home_controller.dart';
 import '../services/http_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,24 +14,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isLoading = true;
-  List<Article> articles = [];
-
-  _loadArticles() async {
-    var response =
-        await Network.GET(Network.API_GET_INFOS, Network.paramsArticle());
-    List<Article> articlesList = Network.parseArticles(response!);
-    print(articlesList.length);
-    setState(() {
-      articles = articlesList;
-    });
-  }
+  final homeController = Get.find<HomeController>();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _loadArticles();
+    homeController.loadArticles();
   }
 
   @override
@@ -36,17 +28,26 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        centerTitle: true,
+        backgroundColor: Colors.grey[300],
+        title: Text(
+          'All articles about Tesla',
+          style: TextStyle(color: Colors.black),
+        ),
       ),
-      body: Stack(
-        children: [
-          ListView.builder(
-            itemCount: articles.length,
-            itemBuilder: (context, index) {
-              return itemOfArticle(articles[index], index);
-            },
-          )
-        ],
+      body: GetBuilder<HomeController>(
+        builder: (_) {
+          return Stack(
+            children: [
+              ListView.builder(
+                itemCount: homeController.articles.length,
+                itemBuilder: (context, index) {
+                  return itemOfArticle(homeController.articles[index], index);
+                },
+              )
+            ],
+          );
+        },
       ),
     );
   }
@@ -63,9 +64,8 @@ class _HomePageState extends State<HomePage> {
           Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(20)
-            ),
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(20)),
             child: Column(
               children: [
                 Container(
