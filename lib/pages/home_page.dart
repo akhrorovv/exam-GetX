@@ -15,7 +15,8 @@ class _HomePageState extends State<HomePage> {
   List<Article> articles = [];
 
   _loadArticles() async {
-    var response = await Network.GET(Network.API_GET_INFOS, Network.paramsArticle());
+    var response =
+        await Network.GET(Network.API_GET_INFOS, Network.paramsArticle());
     List<Article> articlesList = Network.parseArticles(response!);
     print(articlesList.length);
     setState(() {
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blue,
       ),
@@ -40,8 +42,8 @@ class _HomePageState extends State<HomePage> {
         children: [
           ListView.builder(
             itemCount: articles.length,
-            itemBuilder: (context, index){
-              return itemOfArticle(articles[index]);
+            itemBuilder: (context, index) {
+              return itemOfArticle(articles[index], index);
             },
           )
         ],
@@ -49,11 +51,62 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget itemOfArticle(Article article) {
+  Widget itemOfArticle(Article article, int index) {
     return Container(
+      margin: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.grey[300],
+      ),
       child: Column(
         children: [
-
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(20)
+            ),
+            child: Column(
+              children: [
+                Container(
+                  child: Row(
+                    children: [
+                      Text(index.toString()),
+                      SizedBox(width: 10),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.circular(20),
+                          image: DecorationImage(
+                            image: NetworkImage(article.urlToImage!),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Text(article.source.name, style: TextStyle(fontSize: 20))
+                    ],
+                  ),
+                ),
+                Divider(),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(),
+                  child: Column(
+                    children: [
+                      Text(article.title),
+                      Divider(),
+                      Text(article.description),
+                      Divider(),
+                      Text(article.content),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
